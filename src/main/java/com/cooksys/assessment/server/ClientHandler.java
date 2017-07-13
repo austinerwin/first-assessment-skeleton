@@ -22,6 +22,22 @@ public class ClientHandler implements Runnable {
 		super();
 		this.socket = socket;
 	}
+	
+	public Socket getSocket() {
+		return socket;
+	}
+	
+	public void display(Message message) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			String output = mapper.writeValueAsString(message);
+			writer.write(output);
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void run() {
 		try {
@@ -48,6 +64,9 @@ public class ClientHandler implements Runnable {
 						writer.write(response);
 						writer.flush();
 						break;
+					case "broadcast":
+						log.info("user <{}> broadcasted message <{}>", message.getUsername(), message.getContents());
+						display(message);
 				}
 			}
 
