@@ -19,6 +19,7 @@ public class ClientHandler implements Runnable {
 	private Server server;
 	private Logger log = LoggerFactory.getLogger(ClientHandler.class);
 	private Socket socket;
+	private String username;
 
 	public ClientHandler(Socket socket, Server server) {
 		super();
@@ -28,6 +29,14 @@ public class ClientHandler implements Runnable {
 	
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	// Sends message to client socket to display
@@ -44,6 +53,18 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void printOut(String message) {
+		try {
+			if (!socket.isClosed()) {
+				PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+				writer.write(message);
+				writer.flush();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void run() {
 		try {
@@ -54,13 +75,25 @@ public class ClientHandler implements Runnable {
 			while (!socket.isClosed()) {
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
-				//String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 				long timestamp = new Date().getTime();
 				message.setTimestamp(timestamp);
+				
+				// Whisper
+				if (message.getCommand().charAt(0) == '@') {
+					//TODO
+				}
 
 				switch (message.getCommand()) {
 					case "connect":
+						if (server.getUsers().contains(message.getUsername())) {
+							message.setContents("That username is already in use. Please choose another.");
+							display(message);
+							socket.close();
+							break;
+						}
 						log.info("user <{}> connected", message.getUsername());
+						server.addUser(message.getUsername());
+						setUsername(message.getUsername());
 						message.setContents(String.format("%s: <%s> has connected.", message.getUTC(), message.getUsername()));
 						server.broadcast(message);
 						break;
@@ -68,6 +101,7 @@ public class ClientHandler implements Runnable {
 						log.info("user <{}> disconnected", message.getUsername());
 						message.setContents(String.format("%s: <%s> has disconnected.", message.getUTC(), message.getUsername()));
 						server.broadcast(message);
+						server.getUsers().remove(message.getUsername());
 						this.socket.close();
 						break;
 					case "echo":
@@ -80,6 +114,13 @@ public class ClientHandler implements Runnable {
 						message.setContents(String.format("%s: <%s> (broadcast): %s", message.getUTC(), message.getUsername(), message.getContents()));
 						server.broadcast(message);
 						break;
+					case "users":
+						log.info("user <{}> requested users", message.getUsername());
+						String userString = "";
+						for (String user : server.getUsers()) {
+							userString = userString + " " + user;
+						} message.setContents(userString);
+						display(message);
 				}
 			}
 

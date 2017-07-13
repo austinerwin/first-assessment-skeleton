@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import com.cooksys.assessment.model.Message;
 public class Server implements Runnable {
 	private Logger log = LoggerFactory.getLogger(Server.class);
 	private List<ClientHandler> clients = new ArrayList<ClientHandler>();
+	private Set<String> users = new HashSet<String>();
 	
 	private int port;
 	private ExecutorService executor;
@@ -51,15 +54,20 @@ public class Server implements Runnable {
 		}
 	}
 	
-	/*public String getCurrentTime(Message message) {
-		
-	}*/
+	public void addUser(String username) {
+		users.add(username);
+	}
 	
-	/*public void serverBroadcast(String message) {
-		Message message;
+	public Set<String> getUsers() {
+		return users;
+	}
+	
+	/*public void whisper(String username) {
 		for (ClientHandler client : clients) {
-			client.display(message);
+			if (username.equals(client.getUsername())) {
+				client.display(message);
+			}
 		}
 	}*/
-
+	
 }
