@@ -50,5 +50,12 @@ public class Server implements Runnable {
 			client.display(message);
 		}
 	}
+	
+	/*public void serverBroadcast(String message) {
+		Message message;
+		for (ClientHandler client : clients) {
+			client.display(message);
+		}
+	}*/
 
 }
