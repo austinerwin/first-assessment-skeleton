@@ -67,8 +67,11 @@ public class ClientHandler implements Runnable {
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
 						message.setContents(String.format("<%s> (echo): %s", message.getUsername(), message.getContents()));
+						display(message);
+						break;
 					case "broadcast":
 						log.info("user <{}> broadcasted message <{}>", message.getUsername(), message.getContents());
+						message.setContents(String.format("<%s> (broadcast): <%s>", message.getUsername(), message.getContents()));
 						server.broadcast(message);
 				}
 			}
