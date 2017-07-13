@@ -51,6 +51,10 @@ public class Server implements Runnable {
 		}
 	}
 	
+	/*public String getCurrentTime(Message message) {
+		
+	}*/
+	
 	/*public void serverBroadcast(String message) {
 		Message message;
 		for (ClientHandler client : clients) {

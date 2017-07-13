@@ -28,6 +28,7 @@ public class ClientHandler implements Runnable {
 		return socket;
 	}
 	
+	// Sends message to client socket to display
 	public void display(Message message) {
 		try {
 			if (!socket.isClosed()) {
@@ -47,7 +48,7 @@ public class ClientHandler implements Runnable {
 
 			ObjectMapper mapper = new ObjectMapper();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			//PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			while (!socket.isClosed()) {
 				String raw = reader.readLine();
@@ -56,6 +57,8 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
+						message.setContents(String.format("User <%s> has connected.", message.getUsername()));
+						server.broadcast(message);
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
@@ -63,10 +66,7 @@ public class ClientHandler implements Runnable {
 						break;
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
-						String response = mapper.writeValueAsString(message);
-						writer.write(response);
-						writer.flush();
-						break;
+						message.setContents(String.format("<%s> (echo): %s", message.getUsername(), message.getContents()));
 					case "broadcast":
 						log.info("user <{}> broadcasted message <{}>", message.getUsername(), message.getContents());
 						server.broadcast(message);
