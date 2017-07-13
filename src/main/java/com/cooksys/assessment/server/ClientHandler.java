@@ -33,9 +33,8 @@ public class ClientHandler implements Runnable {
 			if (!socket.isClosed()) {
 				ObjectMapper mapper = new ObjectMapper();
 				PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-				String username = message.getUsername();
-				String contents = mapper.writeValueAsString(message);
-				writer.write(username + ": " + contents);
+				String output = mapper.writeValueAsString(message);
+				writer.write(output);
 				writer.flush();
 			}
 		} catch (IOException e) {
@@ -57,7 +56,6 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
-						
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
@@ -66,7 +64,7 @@ public class ClientHandler implements Runnable {
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
 						String response = mapper.writeValueAsString(message);
-						writer.write("ECHO");
+						writer.write(response);
 						writer.flush();
 						break;
 					case "broadcast":
