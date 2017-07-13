@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,31 +50,36 @@ public class ClientHandler implements Runnable {
 
 			ObjectMapper mapper = new ObjectMapper();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			//PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			while (!socket.isClosed()) {
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
+				//String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+				long timestamp = new Date().getTime();
+				message.setTimestamp(timestamp);
 
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
-						message.setContents(String.format("User <%s> has connected.", message.getUsername()));
+						message.setContents(String.format("%s: <%s> has connected.", message.getUTC(), message.getUsername()));
 						server.broadcast(message);
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
+						message.setContents(String.format("%s: <%s> has disconnected.", message.getUTC(), message.getUsername()));
+						server.broadcast(message);
 						this.socket.close();
 						break;
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
-						message.setContents(String.format("<%s> (echo): %s", message.getUsername(), message.getContents()));
+						message.setContents(String.format("%s: <%s> (echo): %s", message.getUTC(), message.getUsername(), message.getContents()));
 						display(message);
 						break;
 					case "broadcast":
 						log.info("user <{}> broadcasted message <{}>", message.getUsername(), message.getContents());
-						message.setContents(String.format("<%s> (broadcast): <%s>", message.getUsername(), message.getContents()));
+						message.setContents(String.format("%s: <%s> (broadcast): %s", message.getUTC(), message.getUsername(), message.getContents()));
 						server.broadcast(message);
+						break;
 				}
 			}
 

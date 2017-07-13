@@ -2,13 +2,14 @@ package com.cooksys.assessment.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Message {
 
 	private String username;
 	private String command;
 	private String contents;
-	private String timestamp;
+	private long timestamp;
 
 	public String getUsername() {
 		return username;
@@ -34,12 +35,18 @@ public class Message {
 		this.contents = contents;
 	}
 	
-	public String getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 	
-	public void setTimestamp(String timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+	
+	public String getUTC() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT-5"));
+		return formatter.format(timestamp) + " CST";
 	}
 
 }
