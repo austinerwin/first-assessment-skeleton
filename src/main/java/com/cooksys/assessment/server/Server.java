@@ -32,7 +32,7 @@ public class Server implements Runnable {
 			ss = new ServerSocket(this.port);
 			while (true) {
 				Socket socket = ss.accept();
-				ClientHandler handler = new ClientHandler(socket);
+				ClientHandler handler = new ClientHandler(socket, this);
 				executor.execute(handler);
 				clients.add(handler);
 			}

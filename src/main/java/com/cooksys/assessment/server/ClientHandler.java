@@ -14,13 +14,14 @@ import com.cooksys.assessment.model.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ClientHandler implements Runnable {
+	private Server server;
 	private Logger log = LoggerFactory.getLogger(ClientHandler.class);
-
 	private Socket socket;
 
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket socket, Server server) {
 		super();
 		this.socket = socket;
+		this.server = server;
 	}
 	
 	public Socket getSocket() {
@@ -66,7 +67,7 @@ public class ClientHandler implements Runnable {
 						break;
 					case "broadcast":
 						log.info("user <{}> broadcasted message <{}>", message.getUsername(), message.getContents());
-						display(message);
+						server.broadcast(message);
 				}
 			}
 
