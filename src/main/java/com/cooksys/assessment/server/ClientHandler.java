@@ -80,7 +80,11 @@ public class ClientHandler implements Runnable {
 				
 				// Whisper
 				if (message.getCommand().charAt(0) == '@') {
-					//TODO
+					String cmd = message.getCommand();
+					String targetUsername = cmd.substring(1, cmd.length());
+					ClientHandler targetClient = server.getClient(targetUsername);
+					message.setContents(String.format("%s: <%s> (whisper): %s", message.getUTC(), message.getUsername(), message.getContents()));
+					targetClient.display(message);
 				}
 
 				switch (message.getCommand()) {

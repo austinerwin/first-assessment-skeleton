@@ -43,8 +43,7 @@ cli
       server.write(new Message({ username, command }).toJSON() + '\n')
     } else if (command.charAt(0) === '@') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    }
-     else {
+    } else {
       this.log(`Command <${command}> was not recognized`)
     }
 

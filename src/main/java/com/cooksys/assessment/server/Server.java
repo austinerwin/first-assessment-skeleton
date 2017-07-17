@@ -62,12 +62,12 @@ public class Server implements Runnable {
 		return users;
 	}
 	
-	/*public void whisper(String username) {
+	public ClientHandler getClient(String username) {
 		for (ClientHandler client : clients) {
 			if (username.equals(client.getUsername())) {
-				client.display(message);
+				return client;
 			}
-		}
-	}*/
+		} return null;
+	}
 	
 }
